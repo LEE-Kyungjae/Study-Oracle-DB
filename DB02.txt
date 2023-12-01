@@ -167,7 +167,65 @@ SELECT first_name, last_name, first_name||' '||last_name full_name
 FROM employees;
 
 -------------------------------------------------------------------
---날짜함수
+--날짜함수(현재 날짜를 저장하는 키워드 sysdate)
+1)MONTHS_BETWEEN : 날짜와 날짜 사이의 개월 수
+2)ADD_MONTHS : 특정 날짜에서 x개월 후의 날짜를 가져온다
+3)Last_Day : 해당 월의 마지막 날
+--날짜형식 모델
+SCC : 세기
+YYYY : 년도
+MM : 월
+MONTH, MON : 월명
+DD : 일
+DAY : 요일
+HH : 시간
+MI : 분
+SS : 초
+
+예) 현재 날짜 출력 
+SELECT sysdate 
+FROM dual;
+
+예) months_between을 통해 입사일로부터 오늘까지 몇개월이 경과했는지 확인
+SELECT first_name, sysdate, hire_date, TRUNC(MONTHS_BETWEEN(sysdate,hire_date), 0) months
+FROM employees;
+
+문) 입사기간이 200개월 이상인 사원들의 이름, 입사일, 입사일부터 현재까지의 개월 수를 조회
+SELECT first_name, hire_date, TRUNC(MONTHS_BETWEEN(sysdate,hire_date), 0) period
+FROM employees
+WHERE MONTHS_BETWEEN(sysdate,hire_date) >= 200
+ORDER BY  MONTHS_BETWEEN(sysdate,hire_date) DESC;
+
+
+예) 입사일로부터 6개월 후의 날짜를 가져와보자
+SELECT first_name, hire_date, ADD_MONTHS(hire_date, 6)
+FROM employees;
+
+문) 사번이 120번인 사원이 입사 후 3년 6개월이 지난 시점에서 퇴사를 했다.
+이 사원의 사번, 이름, 입사일, 퇴사일을 출력
+
+SELECT first_name, hire_date, ADD_MONTHS(hire_date, 12*3+6)
+FROM employees
+WHERE employee_id = 120;
+
+예) 오늘을 기준으로 가장 빨리 돌아오는 요일을 반환
+SELECT sysdate, NEXT_DAY(sysdate, 2)
+FROM dual;
+
+예)이번달의 마지막 날 
+SELECT LAST_DAY(sysdate) 
+FROM dual;
+
+--문자함수(to_char())를 통해 날짜 형식 바꾸기
+SELECT TO_CHAR(sysdate,'YYYY_MM_DD') FROM dual;
+SELECT TO_CHAR(sysdate,'YY.MM.DD') FROM dual;
+SELECT TO_CHAR(sysdate,'YY.MM.D') FROM dual;
+SELECT TO_CHAR(sysdate,'YY.MM.DD MONTH') Day  FROM dual;
+SELECT TO_CHAR(sysdate, 'YY.MM.DD HH24:MI:SS SCC') FROM dual;
+
+
+
+
 
 
 
