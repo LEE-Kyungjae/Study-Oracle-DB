@@ -1,0 +1,78 @@
+8.Create(테이블 생성)
+CREATE TABLE person(
+	idx NUMBER(3) primary key,
+	id VARCHAR2(30) not null,
+	nick VARCHAR2(30) not null,
+	age NUMBER(2)
+);
+
+--컬럼추가
+ALTER table person
+ADD birth DATE;
+
+-- 컬럼 수정
+ALTER table person
+RENAME column birth to bday;
+
+--컬럼 속성 수정
+ALTER table person 
+MODIFY nick VARCHAR2(20);
+
+
+--컬럼 삭제
+ALTER table person 
+DROP column bday;
+
+-- 테이블 삭제
+DROP table person;
+
+-----------------------------------
+
+9.INSERT
+CREATE table person(
+	idx NUMBER(3) primary key,
+	nickname VARCHAR2(20),
+	name VARCHAR2(20),
+	gender VARCHAR2(10),
+	regdate DATE
+);
+
+INSERT INTO person 
+VALUES(1,'hong',	'홍길동','남',sysdate);
+
+--물리적으로 변경사항을 DB에 기록
+commit;
+
+INSERT INTO person 
+VALUES (3, 'kim', '김길순', '여',sysdate);
+commit;
+---------------------------------
+10.UPDATE
+**UPDATE 테이블명 SET 변경할컬럼 = 변경할 값
+WHERE 조건식;
+UPDATE person SET name = 'kgsoon'
+WHERE idx = 3;
+commit;
+---------------------
+
+11.DELETE
+
+DELETE 
+FROM 테이블명
+WHERE 조건식;
+
+DELETE 
+FROM person
+WHERE idx=1;
+
+
+
+
+
+
+
+
+
+
+
+
