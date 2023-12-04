@@ -1,0 +1,83 @@
+6.DB자료형
+1)NUMBER : 숫자데이터를 저장하기 위한 자료형
+형식) NUMBER(자릿수, 소수점 자리수) : 실수
+NUMBER(자릿수) : 정수
+
+2)DATE : 날짜와 시간 데이터를 저장하기 위한 자료형
+3)VARCHAR2 : 문자열
+형식) VARCHAR2(최대 byte수) : 문장
+4)CLOB : 문자열 - 문자열로만 최대 4G이상의 데이터를 저장
+
+--테이블 생성
+CREATE table 테이블명(
+	idx NUMBER(3) primary key,
+	id VARCHAR2(20),
+	nickname VARCHAR2(20),
+	age NUMBER(3),
+	regdate DATE()
+
+);
+--primary key(기본키) : 고유한 식별자로써 중복을 방지
+--candidate key(후보키) : id, nickname, age등의 기본키가 될 자격이 있는 사람들
+--foreign key (외래키) : 테이블간의 관계를 정의하는 개념으로써 두개의 테이블을 연결하는 다리 역할
+7. JOIN : 테이블과 테이블을 연결하여 특정데이터를 얻어오기 위한 키워드
+SELECT emp.first_name, emp.department_id, dep.department_name
+FROM employees emp, departments dep
+WHERE emp.department_id = dep.department_id;
+
+예) 부서, 지역(locations)테이블로부터 부서이름과 도시명을 출력
+SELECT d.department_name, l.city
+FROM departments d, locations l
+WHERE d.location_id= l.location_id;
+
+문) locations 테이블에서 city, countries테이블에서 country_name을 출력.
+SELECT l.city, c.country_name
+FROM locations l, countries c
+WHERE l.country_id = c.country_id;
+
+문) 사원테이블과 jobs테이블을 조회하여
+이름, 이메일, 직종, job_title을 화면에 출력
+SELECT e.first_name, e.email, e.job_id, j.job_title
+FROM employees e, jobs j
+WHERE e.job_id=j.job_id;
+
+예) 사워느 부서, 지역테이블을 조회하여
+이름, 부서번호, 부서이름, 지역번호, 도시명을 출력
+단, city가 Seattle인 경우만 조회
+SELECT e.first_name, e.department_id, d.department_name, d.location_id, loc.city
+FROM employees e, departments d, locations loc
+WHERE e.department_id = d.department_id
+AND d.location_id = loc.LOCATION_ID;
+AND loc.CITY = 'Seattle';
+
+문) loactions, countries, regions테이블을 조회하여
+country_name, region_name을 조회 하시오
+
+SELECT l.country_id, c.country_name, r.region_name
+FROM locations l, countries c, regions r
+WHERE l.country_id = c.country_id
+AND c.region_id = r.region_id;
+
+-------------------------------------------------
+inner join을 사용하는 또 다른 방법
+예) 사원테이블의 부서번호와, 부서테이블의 부서번호가 일치하는 경우를 검색하여
+사번, 이름, 직종, 부서이름(department_name)을 출력해보자
+SELECT e.employee_id, e.first_name, e.job_id, d.department_name
+FROM employees e
+INNER JOIN departments d
+ON e.department_id = d.department_id;
+
+외래키 join
+
+
+
+
+
+
+
+
+
+
+
+
+
