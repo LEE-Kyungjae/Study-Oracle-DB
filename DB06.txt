@@ -1,0 +1,108 @@
+12. ROLLBACK
+ - Transaction : 	DB에서 변경사항이 발생하거나 삭제등의 쿼리가 진행부터
+		마무리(commit) 될 때까지의 과정
+
+--사원 테이블을 emp라는 새로운 테이블에 복사
+CREATE TABLE emp AS 
+select * from EMPLOYEES;
+
+--emp 테이블의 모든 행을 삭제
+DELETE FROM emp;
+
+select * from emp;		--내용이 없다(위에서 del)
+rollback;			--마지막으로 commit한 곳까지 내용이 복구
+****commit 이후에 rollback을 원한다면...****
+delete FROM emp;
+--원하는 시간대로 돌아가서 데이터를 조회한 후, 테이블에 다시 추가
+insert into emp
+select * from emp AS OF Timestamp(systimestamp - interval '10' minute);
+
+또는 select * from emp AS OF Timestamp(systimestamp - interval '1' hour);
+
+또는 select * from emp AS OF Timestamp(systimestamp - interval '1' day);
+commit;
+
+-----------------------------------------------------------------------------------
+
+13.시퀀스(Sequence) : 연속적인 번호를 만들어주는 기능
+CREATE sequence test_seq
+start with 1	/*시작값*/
+increment by 1	/*증가값*/
+maxvalue 200 /*최대값*/
+minvalue 1 /*최소값*/
+nocache; /*cache/nocache*/
+
+예)시퀀스 테스트를 위해 Person테이블의 내용을 모두 제거
+DELETE FROM person;
+
+예)시퀀스를 통해 Person테이블에 값을 추가
+INSERT INTO person 
+VALUES( test_seq.nextval, 'hong','hong gile', 'male' , sysdate);
+INSERT INTO person 
+VALUES( test_seq.nextval, 'hong','hong gile2', 'male' , sysdate);
+commit;
+
+--시퀀스.nextval : 다음시퀀스로 전환
+--시퀀스.currval : 현재 시퀀스로 확인
+ex)select idx, name, test_seq.currval from person;
+
+**시퀀스의 간략화를 통해 다시 한번 데이터를 추가해보자 !!
+--시퀀스 삭제
+DROP SEQUENCE test_seq;
+
+--시퀀스 생성(간략화)
+CREATE SEQUENCE test_seq;
+--start : 1
+--increment : 1
+--maxvalue : 9999자...
+--minvalue : 1
+--cache
+cache : 기본 20개의 index영역을 미리 확보해둔다
+
+------------------------------------------------------------------------------------
+14.view : 원하는 정보들만 추려서 조회하기 위한 가상의테이블
+
+--수정이 불가능한 view
+CREATE VIEW dview AS 
+SELECT deptno, dname
+FROM dept;
+
+--수정이 가능한 view
+CREATE or REPLACE VIEW dview2(no, loc, name) AS
+SELECT deptno, loc, dname
+FROM dept
+WHERE loc = 'CHICAGO';
+
+예) 테이블을 새로 생성하여 값을 넣고, view로 조회해보자
+CREATE TABLE SCORE(
+	idx NUMBER(3) primary key,
+	name VARCHAR2(20) unique,
+	kor NUMBER(3),
+	eng NUMBER(3),
+	math NUMBER(3)
+);
+
+--시퀀스 생성
+CREATE SEQUENCE seq_score_idx;
+
+--샘플데이터 추가
+INSERT INTO score VALUES(
+			seq_score_idx.nextVal,'hong',	100,70,87);
+INSERT INTO score VALUES(
+			seq_score_idx.nextVal,'kim',78,100,92);
+commit;
+
+--score테이블에서 국영수, 총합, 평균을 출력하는 view를 생성
+CREATE OR REPLACE VIEW score_view AS
+SELECT idx, name, kor, eng, math,
+	kor+eng+math total,
+	TRUNC((kor+eng+math)/3,1) avg
+FROM score;
+
+select * from score_view;
+
+CREATE OR REPLACE VIEW score_view AS
+SELECT s.*, (kor+eng+math) tot, 
+	ROUND((kor+eng+math)/3,1) avg,
+	rank() OVER( ORDER BY (kor+eng+math) DESC ) rank
+FROM (select * from score) s;
